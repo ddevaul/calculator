@@ -40,3 +40,6 @@ button {
 #zero{
     grid-area: 5/1/5/3;
 }
+.operator{
+    background-color: rgb(0, 0, 255);
+}
