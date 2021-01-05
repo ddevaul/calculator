@@ -7,7 +7,8 @@
 
 
 let newNum = true; // so the display gets wiped by the first number
-let currentDisplay = "0";
+let currentNum = "0";
+let currentOp;
 let numbers = []; // stack of buttons
 let operators = [];
 const listOfOperators = "+-/x"
@@ -18,10 +19,27 @@ const clearBtn = document.querySelector('#clear');
 clearBtn.addEventListener('click', () => {
     numbers = [];
     operators = [];
+    currentNum = "";
+    if (currentOp) {
+        currentOp.classList.remove('selected');
+    }
+    currentOp = "";
     clearBtn.textContent = "C";
     updateDisplay("0")
 });
 
+const plusMin = document.querySelector("button[data-val='+/'");
+plusMin.addEventListener('click', () => {
+    currentNum = Number(currentNum) * -1;
+    updateDisplay(currentNum);
+});
+
+const percent = document.querySelector("button[data-val='%'");
+percent.addEventListener('click', () => {
+    console.log("hahahas")
+    currentNum = Number(currentNum) / 100;
+    updateDisplay(currentNum);
+});
 // probably should make this an independent function
 // if the AC button was hit, delete the zero from the display content
 numBtns.forEach(b => b.addEventListener('click', numberInput));
@@ -32,7 +50,10 @@ opBtns.forEach(b => {
         b.addEventListener('click', addSubtract);
     }
     else if (b.dataset.val === '='){
-        b.addEventListener('click', calculate);
+        b.addEventListener('click', () => {
+            calculate();
+            numbers = [];
+        });
     }
     else {
         b.addEventListener('click', multiplyDivide);
@@ -40,56 +61,54 @@ opBtns.forEach(b => {
 });
 
 function numberInput(e){
-    if (listOfOperators.includes(currentDisplay)){
-        operators.push(currentDisplay);
+    if (currentOp){
+        currentOp.classList.remove('selected');
+        currentOp = "";
         updateDisplay(e.target.dataset.val);
         return;
     }
-    else if (currentDisplay === "0"){
+    else if (currentNum === "0"){
         updateDisplay(e.target.dataset.val);
         clearBtn.textContent = "AC";
         return;
     }
-    let str = currentDisplay + e.target.dataset.val;
-    updateDisplay(str);
+    currentNum = currentNum + e.target.dataset.val;
+    updateDisplay(currentNum);
 
 }
 
 function addSubtract(e){
     // newNum false means the last thing entered was a number
-    if (listOfOperators.includes(currentDisplay)){
-        updateDisplay(e.target.dataset.val);
+    if (currentOp){
+        console.log("freak out!!!!")
         return;
     }
-    numbers.push(currentDisplay);
-    updateDisplay(e.target.dataset.val);
-    if (operators[operators.length - 1] === "x" 
-        || operators[operators.length - 1] ==="/"){
-            mdLastTwo();
-            operators.push(e.target.dataset.val);
-        }
+    calculate();
+    currentOp = e.target;
+    currentOp.classList.add('selected');
+    operators.push(currentOp.dataset.val);
 }
 
 // if previous elements were about to be added, then add them now
 function multiplyDivide(e){
-    if (listOfOperators.includes(currentDisplay)){
-        currentDisplay = e.target.dataset.val;
-        updateDisplay();
+    if (currentOp){
+        console.log("PROBLEM PROBLEM PROBLEM")
         return;
     }
-    numbers.push(currentDisplay);
-    updateDisplay(e.target.dataset.val);
+    numbers.push(currentNum);
     if (operators[operators.length - 1] === "x" 
         || operators[operators.length - 1] ==="/"){
             mdLastTwo();
-            operators.push(e.target.dataset.val);
-        }
+    }
+    currentOp = e.target;
+    currentOp.classList.add('selected');
+    operators.push(currentOp.dataset.val);
 }
 
 function calculate(){
-    if (!listOfOperators.includes(currentDisplay)){ // the current display is a number
-        numbers.push(currentDisplay);
-    }
+    numbers.push(currentNum);
+    console.log(numbers)
+    console.log(operators)
     while(numbers.length > 1) {
         let sum = "";
         let num2 = Number(numbers.pop());
@@ -113,20 +132,15 @@ function calculate(){
         numbers.push(sum);
     }
     updateDisplay(numbers[0]);
-    numbers = [];
     operators = [];
-  
 }
 
 function updateDisplay(str){
-    currentDisplay = str;
-    display.textContent = currentDisplay;
+    currentNum = str;
+    display.textContent = currentNum;
 }
 
 function mdLastTwo(){
-    console.log(numbers)
-    console.log(operators)
-    console.log("asdfasdfasdf")
     let sum = 0;
     let num2 = Number(numbers.pop());
     let num1 = Number(numbers.pop());
@@ -146,11 +160,10 @@ function mdLastTwo(){
             sum = (num1/num2);
             break;
     }
-    console.log(sum);
     numbers.push(sum);
     console.log(numbers);
-    operators.push(currentDisplay);
-    updateDisplay(numbers[0]);
+    console.log(operators);
+    updateDisplay(numbers[numbers.length -1]);
 }
 
 
