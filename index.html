@@ -7,28 +7,54 @@
         <div id="calc-body">
             <div id="display">0</div>
             <div id="button-layout">
-                <button data-val="AC" id="clear" class="top-row">C</button>
-                <button data-val="+/" class="top-row">+/</button>
-                <button data-val="%" class="top-row">%</button>
-                <button data-val="/" class="operator">/</button>
-                <button data-val="7" class="number">7</button>
-                <button data-val="8" class="number">8</button>
-                <button data-val="9" class="number">9</button>
-                <button data-val="x" class="operator">x</button>
-                <button data-val="4" class="number">4</button>
-                <button data-val="5" class="number">5</button>
-                <button data-val="6" class="number">6</button>
-                <button data-val="-" class="operator">-</button>
-                <button data-val="1" class="number">1</button>
-                <button data-val="2" class="number">2</button>
-                <button data-val="3" class="number">3</button>
-                <button data-val="+" class="operator">+</button>
-                <button data-val="0" class="number" id="zero">0</button>
-                <!-- probably need to add an id to this to disable it if a deciaml is already in the number -->
-                <button data-val=".">.</button> 
-                <button data-val="=" class="operator">=</button>
+                <button data-key="Escape" id="clear" class="top-row">C</button>
+                <button data-key="_" class="top-row">+/-</button>
+                <button data-key="%" class="top-row">%</button>
+                <button data-key="/" class="operator">/</button>
+                <button data-key="7" class="number">7</button>
+                <button data-key="8" class="number">8</button>
+                <button data-key="9" class="number">9</button>
+                <button data-key="x" class="operator">x</button>
+                <button data-key="4" class="number">4</button>
+                <button data-key="5" class="number">5</button>
+                <button data-key="6" class="number">6</button>
+                <button data-key="-" class="operator">-</button>
+                <button data-key="1" class="number">1</button>
+                <button data-key="2" class="number">2</button>
+                <button data-key="3" class="number">3</button>
+                <button data-key="+" class="operator">+</button>
+                <button data-key="0" class="number" id="zero">0</button>
+                <button data-key=".">.</button> 
+                <button data-key="=" class="operator">=</button>
             </div>
+        </div>
+        <button id ="info">info</button>
+        <div id="introduction" class="hidden">
+            <p>Welcome to this calculator I made. 
+            I based it on the iOS calculator (both in design and functionality). 
+            You can use it by clicking on the calculator or by typing.
+            If you choose to type:
+                <ul>
+                <li>Hitting backspace deletes the last typed digit but does NOT 
+                clear the calculator. This is functionality limited to the 
+                keyboard.</li>
+                <li>The numbers correspond to numbers.</li>
+                <li>'*' and 'x' can be typed for
+                multiplication. '/' can be used for division. </li>
+                <li>'+' and '-' can be used for addition and subtraction. </li>
+                <li>'%' can be used to get the percent value of the currently 
+                displayed number. </li>
+                <li>'_' can be used to make toggle the number between negative 
+                and positive values. </li>
+                <li>'=' and the return key can be used to compute the answer.
+                </li>
+                <li>The escape key clears the calculator.</li>
+                </ul>
+            </p>
         </div>
     </body>
     <script src="script.js"></script>
 </html>
+
+
+<!--  -->
