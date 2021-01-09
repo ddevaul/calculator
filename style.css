@@ -6,6 +6,32 @@ body{
     flex-direction: column;
     align-items: center;
 }
+button {
+    border-radius: 5%;
+    font-size: 1rem; 
+    max-width: 12rem;
+    height: 100%;
+    width: 100%;
+    background-color:rgb(228, 229, 235) ;
+}
+button:focus{
+    outline: none;
+}
+.operator{
+    background-color: rgb(255, 145, 0);
+}
+
+.selected{
+    background-color: rgb(255, 161, 37);
+    border-color:rgb(228, 229, 235);
+}
+.top-row {
+    background-color: rgb(161, 161, 161);
+}
+
+.hidden{
+    display: none;
+}
 #calc-body {
     border-radius: 4%;
     padding: .5rem;
@@ -34,28 +60,14 @@ body{
     width: 100%;
     background-color:rgb(148, 148, 148);
 }
-button {
-    border-radius: 5%;
-    font-size: 1rem; 
-    max-width: 12rem;
-    height: 100%;
-    width: 100%;
-    background-color:rgb(228, 229, 235) ;
-}
-button:focus{
-    outline: none;
-}
 #zero{
     grid-area: 5/1/5/3;
 }
-.operator{
-    background-color: rgb(255, 145, 0);
-}
-
-.selected{
-    background-color: rgb(255, 161, 37);
-    border-color:rgb(228, 229, 235);
-}
-.top-row {
-    background-color: rgb(161, 161, 161);
+#info{
+    font-size: small;
+    margin: .5rem;
+    width: 2rem;
+    height: 1rem;
+    background: rgb(201, 201, 201);
+    border-radius: 0;
 }
