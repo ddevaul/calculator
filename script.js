@@ -1,48 +1,90 @@
-// should the function work if the last button input was a decimal?
-
-// should it keep doing the last operation after the equals sign is hit??
-// remove .selected and replace it with .operator:focus
-
-let newNum = true; // so the display gets wiped by the first number
 let currentNum = "0";
 let currentOp;
 let numbers = []; // stack of buttons
-let operators = [];
-const listOfOperators = "+-/x"
-const listOfNumbers = "1234567890";
+let operators = []; // stack of strings
 const display = document.querySelector('#display');
 const numBtns = document.querySelectorAll('.number');
 const clearBtn = document.querySelector('#clear');
-clearBtn.addEventListener('click', () => {
-    numbers = [];
-    operators = [];
-    currentNum = "";
-    if (currentOp) {
-        currentOp.classList.remove('selected');
+const infoBtn = document.querySelector('#info');
+const introduction = document.querySelector('#introduction');
+const plusMin = document.querySelector("button[data-key='_'");
+const percent = document.querySelector("button[data-key='%'");
+const decimal = document.querySelector("button[data-key='.");
+const opBtns = document.querySelectorAll('.operator');
+// add event listeners to each html object
+numBtns.forEach(b => b.addEventListener('click', (e) => numberInput(e.target)));
+clearBtn.addEventListener('click', clear);
+plusMin.addEventListener('click', plusMinusFunc);
+percent.addEventListener('click', percentFunc);
+decimal.addEventListener('click', decInput);
+opBtns.forEach(b => {
+    if (b.dataset.key === '+' || b.dataset.key === '-'){
+        b.addEventListener('click', (e) => addSubtract(e.target));
     }
-    currentOp = "";
-    clearBtn.textContent = "C";
-    updateDisplay("0")
+    else if (b.dataset.key === '='){
+        b.addEventListener('click', () => {
+            calculate();
+        });
+    }
+    else {
+        b.addEventListener('click', () => multiplyDivide(b));
+    }
 });
-
-const plusMin = document.querySelector("button[data-val='+/'");
-plusMin.addEventListener('click', () => {
+infoBtn.addEventListener('click', (e) => {
+    e.target.classList.toggle('selected');
+    introduction.classList.toggle('hidden');
+});
+document.addEventListener('keydown', (e) => {
+    if (e.key === "Enter" || e.key === "="){
+        e.preventDefault();
+        calculate();
+    } 
+    else if (e.key === "Backspace" && !currentOp){
+        if (currentNum.length === 1){
+            updateDisplay("0");
+        } else {
+            updateDisplay(currentNum.slice(0, currentNum.length - 1));
+        }
+    }
+    else if (e.key === "*" || e.key === "x"){
+        const btn = document.querySelector(`button[data-key="x"]`);
+        multiplyDivide(btn);
+    } else if (e.key !== "Shift") {
+        const btn = document.querySelector(`button[data-key="${e.key}"]`);
+        if (/[0-9]/.test(e.key)){
+            numberInput(btn);    
+        }
+        else if (e.key === "/"){
+            multiplyDivide(btn);
+        }
+        else if (e.key === "Escape"){
+            clear();
+        }
+        else if (e.key === "."){
+            decInput();
+        }
+        else if (e.key === "-"){
+            addSubtract(btn);
+        }
+        else if (e.key === "+"){
+            addSubtract(btn);
+        }
+    }
+});
+// all the actions trigerred by the event listeners are below
+function plusMinusFunc(){
     currentNum = Number(currentNum) * -1;
     updateDisplay(currentNum);
-});
-
-const percent = document.querySelector("button[data-val='%'");
-percent.addEventListener('click', () => {
+}
+function percentFunc(){
     currentNum = Number(currentNum) / 100;
     updateDisplay(currentNum);
-});
-
-const decimal = document.querySelector("button[data-val='.");
-decimal.addEventListener('click', (e) => {
+}
+function decInput(){
     if (currentOp){
         currentOp.classList.remove('selected');
         currentOp = "";
-        updateDisplay(e.target.dataset.val);
+        updateDisplay("0.");
         return;
     } 
     else if (currentNum === "0"){
@@ -51,80 +93,79 @@ decimal.addEventListener('click', (e) => {
         return;
     }
     else if (!currentNum.includes(".") && currentNum.toString().length < 13){
-        currentNum = currentNum + e.target.dataset.val;
+        currentNum = currentNum + ".";
         updateDisplay(currentNum);
     }
-});
-
-
-
-// probably should make this an independent function
-// if the AC button was hit, delete the zero from the display content
-numBtns.forEach(b => b.addEventListener('click', numberInput));
-
-const opBtns = document.querySelectorAll('.operator');
-opBtns.forEach(b => {
-    if (b.dataset.val === '+' || b.dataset.val === '-'){
-        b.addEventListener('click', addSubtract);
+}
+function clear(){
+    numbers = [];
+    operators = [];
+    currentNum = "";
+    if (currentOp) {
+        currentOp.classList.remove('selected');
     }
-    else if (b.dataset.val === '='){
-        b.addEventListener('click', () => {
-            calculate();
-            numbers = [];
-        });
-    }
-    else {
-        b.addEventListener('click', multiplyDivide);
-    }
-});
-
-function numberInput(e){
+    currentOp = "";
+    clearBtn.textContent = "C";
+    updateDisplay("0");
+}
+// adds number to display, also sets the currentOp to an empty string so a new
+// operator can be added
+function numberInput(btn){
     if (currentOp){
         currentOp.classList.remove('selected');
         currentOp = "";
-        updateDisplay(e.target.dataset.val);
+        updateDisplay(btn.dataset.key);
         return;
     }
     else if (currentNum === "0"){
-        updateDisplay(e.target.dataset.val);
+         updateDisplay(btn.dataset.key);
         clearBtn.textContent = "AC";
         return;
     }
     else if (currentNum.toString().length < 14)
-        currentNum = currentNum + e.target.dataset.val;
+        currentNum = currentNum + btn.dataset.key;
         updateDisplay(currentNum);
 }
+// this function handles when + or - are entered, but does not do the 
+// calculation itself. if a number has been input, that number is pushed to the
+// array of numbers. then this button's operator is added to the array of
+// operators and the button is changed to show the viewer what operation they
+// clicked on
 
-function addSubtract(e){
-    // newNum false means the last thing entered was a number
-    if (currentOp){
-        console.log("freak out!!!!")
-        return;
+function addSubtract(btn){
+    if (currentNum === "0" && btn.dataset.key === "-" && numbers.length === 0){
+        updateDisplay("-"); // if the user wants to start with a negative number
     }
-    calculate();
-    currentOp = e.target;
-    currentOp.classList.add('selected');
-    operators.push(currentOp.dataset.val);
+    else if (!currentOp){ // so that multiple operators cannot be added in a row
+        calculate();
+        numbers.push(currentNum);
+        currentOp = btn;
+        currentOp.classList.add('selected');
+        operators.push(currentOp.dataset.key);
+    } 
 }
-
-// if previous elements were about to be added, then add them now
-function multiplyDivide(e){
-    if (currentOp){
-        console.log("PROBLEM PROBLEM PROBLEM")
-        return;
+// this function handles when + or - are entered, but does not do the 
+// calculation itself. note that if the last two numbers entered were supposed
+// to be multiplied or divided it will do that calculation first, so that 
+// calculations are done on the go while following pemdas. it then adds the
+// number and operator to the respective arrays.
+function multiplyDivide(btn){
+    if (!currentOp){ // so that multiple operators cannot be added in a row
+        numbers.push(currentNum);
+        if (operators[operators.length - 1] === "x" 
+            || operators[operators.length - 1] ==="/"){
+                mdLastTwo();
+        }
+        currentOp = btn;
+        currentOp.classList.add('selected');
+        operators.push(currentOp.dataset.key);
     }
-    numbers.push(currentNum);
-    if (operators[operators.length - 1] === "x" 
-        || operators[operators.length - 1] ==="/"){
-            mdLastTwo();
-    }
-    currentOp = e.target;
-    currentOp.classList.add('selected');
-    operators.push(currentOp.dataset.val);
 }
-
+// goes through the numbers and operators arrays and performs the corresponding
+// actions, clears the number and operator arrays, while making the display
+// and the currentNum variable the answer.
 function calculate(){
-    numbers.push(currentNum);
+    numbers.push(currentNum); // the last number the user input
     while(numbers.length > 1) {
         let sum = "";
         let num2 = Number(numbers.pop());
@@ -142,13 +183,18 @@ function calculate(){
                 sum = (num1 * num2);
                 break;
             case '/':
+                if (num2 === 0){ // handles division by 0
+                    updateDisplay("Error");
+                    return;
+                } 
                 sum = (num1/num2);
                 break;
         }
-        sum = formatNumbers(sum);
+        sum = formatNumbers(sum); // makes the number fit on the display
         numbers.push(sum);
     }
     updateDisplay(numbers[0]);
+    numbers = [];
     operators = [];
 }
 
@@ -156,48 +202,35 @@ function updateDisplay(str){
     currentNum = str;
     display.textContent = currentNum;
 }
-
+// multiplies/divides the last two numbers in the array. called by the 
+// multiply/divide buttons event listener function. 
 function mdLastTwo(){
     let sum = 0;
     let num2 = Number(numbers.pop());
     let num1 = Number(numbers.pop());
     let op = operators.pop();
-    
     switch(op) {
-        case '+': 
-            sum = (num1 + num2);
-            break;
-        case '-':
-            sum = (num1 - num2);
-            break;
         case 'x':
             sum = (num1 * num2);
             break;
         case '/':
+            if (num2 === 0){ // handles division by 0
+                updateDisplay("Error");
+                return;
+            } 
             sum = (num1/num2);
             break;
     }
-    // if too small or too big convert to scientific notation
-    // ugh then I need to be able to deal with this
-    // else if too many decimal points do something fancy
-    // limit input size to 14 digits 
     numbers.push(sum);
     updateDisplay(numbers[numbers.length -1]);
 }
-
+// makes the numbers fit on the screen
 function formatNumbers(num){
-    // over 1000000 with no comma 
-    // over 10000 and with a comma
-    // longer than 14 characters 
-
     if (Number(num) > 100000000000){
         return num.toExponential(3);
     }
-    else if (num.toString().length > 14) { // potential error here if its a 
-                                           // long number with like one decimal it will round wrong
-        return num.toPrecision(12);
+    else if (num.toString().length > 14) {                               
+        return num.toPrecision(12); // toPrecision formats as 1.4e+02
     }
-    else return num;      
+    return num; 
 }
-
-
